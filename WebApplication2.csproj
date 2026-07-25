@@ -7,7 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.1.79" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.18"/>
+        <PackageReference Include="Npgsql" Version="10.0.3" />
         <PackageReference Include="Supabase" Version="1.2.0" />
         <PackageReference Include="Supabase.Functions" Version="2.1.1" />
     </ItemGroup>
