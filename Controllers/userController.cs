@@ -7,7 +7,7 @@ namespace WebApplication2.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 
-public class userController : ControllerBase
+public class UserController : ControllerBase
 {
     [HttpGet]
     public ActionResult<string> GetName()
