@@ -7,3 +7,10 @@ Accept: application/json
 
 GET {{WebApplication2_HostAddress}}/api/user/
 Accept: application/json
+
+
+
+###
+
+GET {{WebApplication2_HostAddress}}/api/Doctors/
+Accept: application/json

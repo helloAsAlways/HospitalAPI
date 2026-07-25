@@ -10,7 +10,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "SUPABASE_URL": "https://czerougactyopaxpbjxj.supabase.co/",
         "SUPABASE_KEY": "sb_publishable_hUlWri3p27hMe1o3OmsChQ_tKP-Kxqi",
-        "DBCONNECTION": "Host=db.czerougactyopaxpbjxj.supabase.co;Database=postgres;Username=postgres;Password=xq4mqF6X2ZyumMIC;SSL Mode=Require;Trust Server Certificate=true"
+        "DBCONNECTION": "Host=aws-1-ap-south-1.pooler.supabase.com;Port=6543; Database=postgres;Username=postgres.czerougactyopaxpbjxj;Password=eLnL7Lekzhn06lcS;SSL Mode=Require;Trust Server Certificate=true",
       }
     },
     "https": {
@@ -22,7 +22,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
           "SUPABASE_URL": "https://czerougactyopaxpbjxj.supabase.co/",
           "SUPABASE_KEY": "sb_publishable_hUlWri3p27hMe1o3OmsChQ_tKP-Kxqi",
-          "DBCONNECTION": "Host=db.czerougactyopaxpbjxj.supabase.co;Database=postgres;Username=postgres;Password=xq4mqF6X2ZyumMIC;SSL Mode=Require;Trust Server Certificate=true"
+          "DBCONNECTION": "Host=aws-1-ap-south-1.pooler.supabase.com;Port=6543; Database=postgres;Username=postgres.czerougactyopaxpbjxj;Password=eLnL7Lekzhn06lcS;SSL Mode=Require;Trust Server Certificate=true"
       }
     }
   }

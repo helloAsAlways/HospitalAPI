@@ -1,10 +1,12 @@
 using Supabase;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using WebApplication2.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Add Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddOpenApi();
 
 // 2. Read Environment Variables

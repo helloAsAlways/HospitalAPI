@@ -1,7 +1,14 @@
+using Supabase.Postgrest.Models;
+using Supabase.Postgrest.Attributes;
+
 namespace WebApplication2.Models;
 
-public class Doctor
+
+[Table("doctors")]
+public class Doctors: BaseModel
 {
+    [PrimaryKey("person_id", false)]
     public long Person_Id { get; set; } // int8 in Postgres = long in C#
-    public string Specialty { get; set; }
+    [Column("speciality")]
+    public string Speciality { get; set; } = string.Empty;
 }

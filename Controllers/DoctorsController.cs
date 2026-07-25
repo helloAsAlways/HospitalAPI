@@ -1,22 +1,32 @@
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using Supabase;
 using WebApplication2.Models;
-
-[ApiController]
-[Route("api/[controller]")]
 
 namespace WebApplication2.Controllers;
 
-public class DoctorsController: Controller
+[ApiController]
+[Route("api/[controller]")]
+public class DoctorsController : ControllerBase // ✅ Use ControllerBase for APIs
 {
-    private readonly Supabase.Client _supabase;
     private readonly string _connectionString;
 
-    public DoctorsController(Supabase.Client supabase, string connectionString)
+    // ✅ Remove _supabase from this controller
+    public DoctorsController(string connectionString)
     {
-        _supabase = supabase;
         _connectionString = connectionString;
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllDoctors()
+    {
+        var sql = "SELECT person_id AS Person_Id, speciality AS Speciality FROM doctors";
+        
+        using var connection = new NpgsqlConnection(_connectionString);
+        var doctors = await connection.QueryAsync<Doctors>(sql);
+
+        return Ok(doctors);
+    }
 }
+
+

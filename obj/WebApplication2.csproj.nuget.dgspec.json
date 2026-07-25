@@ -48,9 +48,21 @@
               "target": "Package",
               "version": "[2.1.79, )"
             },
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[7.0.5, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.18, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[10.0.10, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.5-beta1, )"
             },
             "Npgsql": {
               "target": "Package",
@@ -63,6 +75,10 @@
             "Supabase.Functions": {
               "target": "Package",
               "version": "[2.1.1, )"
+            },
+            "Supabase.Postgrest": {
+              "target": "Package",
+              "version": "[4.4.0, )"
             }
           },
           "imports": [
