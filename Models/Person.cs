@@ -1,6 +1,12 @@
+using Supabase.Postgrest.Models;
+using Supabase.Postgrest.Attributes;
+
 namespace WebApplication2.Models;
 
-public class Person
+
+[Table("person")]
+public class Person: BaseModel
 {
-    
+    [Column("speciality")]
+    public string Speciality { get; set; } = string.Empty;
 }
