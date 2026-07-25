@@ -10,6 +10,7 @@ builder.Services.AddOpenApi();
 // 2. Read Environment Variables
 var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
 var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
+var connectionString = Environment.GetEnvironmentVariable("DBCONNECTION");
 
 // 3. Initialize Supabase
 var options = new Supabase.SupabaseOptions
@@ -21,6 +22,7 @@ await supabase.InitializeAsync();
 
 // 4. ✅ FIX: Register the client so your Controllers can use it!
 builder.Services.AddSingleton<Supabase.Client>(supabase);
+builder.Services.AddSingleton<string>(connectionString);
 
 var app = builder.Build();
 
