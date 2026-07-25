@@ -48,3 +48,4 @@
 /home/dam/RiderProjects/WebApplication2/WebApplication2/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
 /home/dam/RiderProjects/WebApplication2/WebApplication2/bin/Debug/net9.0/System.Reactive.dll
 /home/dam/RiderProjects/WebApplication2/WebApplication2/bin/Debug/net9.0/Websocket.Client.dll
+/home/dam/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net9.0/WebApplication2.sourcelink.json
