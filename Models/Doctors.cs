@@ -7,8 +7,8 @@ namespace WebApplication2.Models;
 [Table("doctors")]
 public class Doctors: BaseModel
 {
-    [PrimaryKey("person_id", false)]
-    public long Person_Id { get; set; } // int8 in Postgres = long in C#
+    [PrimaryKey("doctor_table_id", false)]
+    public long Doctor_Table_Id { get; set; } // int8 in Postgres = long in C#
     [Column("speciality")]
     public string Speciality { get; set; } = string.Empty;
 }

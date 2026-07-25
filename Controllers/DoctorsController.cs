@@ -20,7 +20,7 @@ public class DoctorsController : ControllerBase // ✅ Use ControllerBase for AP
     [HttpGet]
     public async Task<IActionResult> GetAllDoctors()
     {
-        var sql = "SELECT person_id AS Person_Id, speciality AS Speciality FROM doctors";
+        var sql = "SELECT doctor_table_id AS Doctor_Table_Id, speciality AS Speciality FROM doctors";
         
         using var connection = new NpgsqlConnection(_connectionString);
         var doctors = await connection.QueryAsync<Doctors>(sql);
