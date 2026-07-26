@@ -3,29 +3,68 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using WebApplication2.Models;
 
+
+
 namespace WebApplication2.Controllers;
 
+public class CreateDoctorRequest
+{
+    public string Name { get; set; } = "";
+    public DateTime? Date_Of_Birth { get; set; }
+    public string Contact_Number { get; set; } = "";
+    public string speciality { get; set; } = "";
+}
 [ApiController]
 [Route("api/[controller]")]
+
 public class DoctorsController : ControllerBase // ✅ Use ControllerBase for APIs
 {
     private readonly string _connectionString;
-
+    private readonly Supabase.Client _supabase;
     // ✅ Remove _supabase from this controller
-    public DoctorsController(string connectionString)
+    public DoctorsController( Supabase.Client supabase, string connectionString)
     {
         _connectionString = connectionString;
+        _supabase = supabase;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllDoctors()
     {
-        var sql = "SELECT doctor_table_id AS Doctor_Table_Id, speciality AS Speciality FROM doctors";
-        
-        using var connection = new NpgsqlConnection(_connectionString);
-        var doctors = await connection.QueryAsync<Doctors>(sql);
+        var result = await _supabase.From<Doctors>().Get();
+        return Ok(result.Models);
+    }
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetDoctorById(long id)
+    {
+        var result = await _supabase.From<Doctors>()
+            .Where(d => d.Doctor_Table_Id== id)
+            .Get();
+        var doctor = result.Models.FirstOrDefault();
+        return doctor is null ? NotFound() : Ok(doctor);
+    } 
+    [HttpPost]
+    public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorRequest req)
+    {
+        using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
 
-        return Ok(doctors);
+        // Step 1: Insert into persons and RETURN the generated ID
+        var personSql = @"
+        INSERT INTO persons (name, date_of_birth, contact_number) 
+        VALUES (@Name, @Date_Of_Birth, @Contact_Number)
+        RETURNING id";
+
+        var personId = await conn.ExecuteScalarAsync<long>(personSql, req);
+
+        // Step 2: Insert into doctors using the generated ID
+        var doctorSql = @"
+        INSERT INTO doctors (doctor_table_id, speciality) 
+        VALUES (@PersonId, @speciality)";
+
+        await conn.ExecuteAsync(doctorSql, new { PersonId = personId, req.speciality });
+
+        return Created($"/api/doctors/{personId}", new { Id = personId, req.Name, req.speciality });
     }
 }
 
