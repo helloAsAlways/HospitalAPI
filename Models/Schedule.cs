@@ -7,13 +7,14 @@ namespace WebApplication2.Models;
 public class Schedule
 {
     [Key] // primary key
-    public Guid ScheduleId  { get; set; } = Guid.NewGuid();
+    public long ScheduleId  { get; set; }
     
-    public Guid DoctorId { get; set; }
+    [Column("doctor_id")]
+    public long DoctorId { get; set; }
     [ForeignKey(nameof(DoctorId))]
     public Doctor? Doctor { get; set; }
 
-    public Guid PatientId { get; set; }
+    public long PatientId { get; set; }
     [ForeignKey(nameof(PatientId))]
     public Patient? Patient { get; set; }
     

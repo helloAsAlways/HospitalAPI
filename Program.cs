@@ -1,16 +1,19 @@
 using WebApplication2.Data;
-
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});;
 builder.Services.AddOpenApi();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
+var connectionString = Environment.GetEnvironmentVariable("DBCONNECTION");
 builder.Services.AddControllers();
-builder.Services.AddDbContext<MyAppContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<MyAppContext>(options => options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
 
 var app = builder.Build();
 

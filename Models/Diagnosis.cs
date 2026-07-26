@@ -6,15 +6,16 @@ namespace WebApplication2.Models;
 public class Diagnosis
 {
     [Key]
-    public Guid DiagnosisId { get; set; }
-    public Guid AppointmentId { get; set; }
+    public long DiagnosisId { get; set; }
+    public long AppointmentId { get; set; }
     [ForeignKey(nameof(AppointmentId))]
     public Appointment? Appointment { get; set; }
-    public Guid PatientId { get; set; }
+    public long PatientId { get; set; }
     [ForeignKey(nameof(PatientId))]
     public  Patient? Patient { get; set; }
     
-    public Guid DoctorId { get; set; }
+    [Column("doctor_id")]
+    public long DoctorId { get; set; }
     [ForeignKey(nameof(DoctorId))]
     public Doctor? Doctor { get; set; }
     

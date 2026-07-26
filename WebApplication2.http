@@ -12,16 +12,21 @@ Accept: application/json
 
 ###
 
-GET {{WebApplication2_HostAddress}}/api/Doctors/
-Accept: application/json
-###
-
-GET {{WebApplication2_HostAddress}}/api/Doctors/2
+GET {{WebApplication2_HostAddress}}/api/Doctor/
 Accept: application/json
 
 ###
 
-POST {{WebApplication2_HostAddress}}/api/Doctors/
+GET {{WebApplication2_HostAddress}}/api/MedicalRecords/
+Accept: application/json
+###
+
+GET {{WebApplication2_HostAddress}}/api/Doctor/2
+Accept: application/json
+
+###
+
+POST {{WebApplication2_HostAddress}}/api/Doctor/
 Content-Type: application/json
 
 {
@@ -30,3 +35,15 @@ Content-Type: application/json
   "contact_number": "+1-555-1234",
   "speciality": "Cardiology"
 }
+
+
+###
+
+POST {{WebApplication2_HostAddress}}/api/MedicalRecords/
+Content-Type: application/json
+
+{
+  "patient_id": 13,
+  "doctor_id": 13
+}
+

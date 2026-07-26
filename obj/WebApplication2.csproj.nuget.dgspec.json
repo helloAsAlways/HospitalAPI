@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[2.1.79, )"
             },
+            "EFCore.NamingConventions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
               "target": "Package",
               "version": "[7.0.5, )"
@@ -66,7 +70,7 @@
             },
             "Microsoft.Extensions.Configuration.Json": {
               "target": "Package",
-              "version": "[10.0.10, )"
+              "version": "[9.0.0, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -75,6 +79,10 @@
             "Npgsql": {
               "target": "Package",
               "version": "[10.0.3, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
             },
             "Supabase": {
               "target": "Package",

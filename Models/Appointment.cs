@@ -3,16 +3,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication2.Models;
 
+public enum AppointmentStatus
+{
+    Pending,
+    Booked,
+    Cancelled,
+    Completed
+}
+ 
 public class Appointment
 {
-    public Guid AppointmentId { get; set; } = Guid.NewGuid();
-    public Guid PatientId { get; set; }
-    [ForeignKey(nameof(PatientId))]
+    public long Id { get; set; }
+ 
+    public long PatientId { get; set; }
     public Patient? Patient { get; set; }
-    public Guid DoctorId { get; set; }
-    [ForeignKey(nameof(DoctorId))]
+ 
+    public long DoctorId { get; set; }
     public Doctor? Doctor { get; set; }
-    
-    public DateTime ScheduledAt { get; set; }
-    public string Status { get; set; } = "pending";
+ 
+    public DateTimeOffset ScheduledTime { get; set; }
+    public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
+    public DateTimeOffset CreatedAt { get; set; }
 }
