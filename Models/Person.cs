@@ -1,12 +1,16 @@
-using Supabase.Postgrest.Models;
-using Supabase.Postgrest.Attributes;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApplication2.Models;
 
-
-[Table("person")]
-public class Person: BaseModel
+public class Person
 {
-    [Column("speciality")]
-    public string Speciality { get; set; } = string.Empty;
+    [Key]
+    public Guid Id { get; set; } =  Guid.NewGuid();
+    public string Name { get; set; } = "";
+    public DateTime? DateOfBirth { get; set; }
+    public string ContactNumber { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Address { get; set; } = "";
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

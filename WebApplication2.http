@@ -14,3 +14,19 @@ Accept: application/json
 
 GET {{WebApplication2_HostAddress}}/api/Doctors/
 Accept: application/json
+###
+
+GET {{WebApplication2_HostAddress}}/api/Doctors/2
+Accept: application/json
+
+###
+
+POST {{WebApplication2_HostAddress}}/api/Doctors/
+Content-Type: application/json
+
+{
+  "name": "Dr. John Smith",
+  "date_of_birth": "1980-05-15",
+  "contact_number": "+1-555-1234",
+  "speciality": "Cardiology"
+}
