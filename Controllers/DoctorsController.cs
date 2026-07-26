@@ -60,11 +60,18 @@ public class DoctorsController : ControllerBase // ✅ Use ControllerBase for AP
         // Step 2: Insert into doctors using the generated ID
         var doctorSql = @"
         INSERT INTO doctors (doctor_table_id, speciality) 
-        VALUES (@PersonId, @speciality)";
+        VALUES (@PersonId, @speciality)
+        ";
 
-        await conn.ExecuteAsync(doctorSql, new { PersonId = personId, req.speciality });
+        await conn.ExecuteAsync(
+            doctorSql, 
+            new { PersonId = personId, req.speciality }
+        );
 
-        return Created($"/api/doctors/{personId}", new { Id = personId, req.Name, req.speciality });
+        return Created(
+            $"/api/doctors/{personId}",
+            new { Id = personId, req.Name, req.speciality }
+        );
     }
 }
 
