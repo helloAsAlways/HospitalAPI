@@ -28,21 +28,6 @@ public class DoctorsController : ControllerBase // ✅ Use ControllerBase for AP
         _supabase = supabase;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllDoctors()
-    {
-        var result = await _supabase.From<Doctors>().Get();
-        return Ok(result.Models);
-    }
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetDoctorById(long id)
-    {
-        var result = await _supabase.From<Doctors>()
-            .Where(d => d.Doctor_Table_Id== id)
-            .Get();
-        var doctor = result.Models.FirstOrDefault();
-        return doctor is null ? NotFound() : Ok(doctor);
-    } 
     [HttpPost]
     public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorRequest req)
     {
