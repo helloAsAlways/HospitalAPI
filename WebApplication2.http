@@ -31,8 +31,8 @@ Content-Type: application/json
 
 {
   "name": "Dr. John Siddique",
-  "date_of_birth": "1980-05-15",
-  "contact_number": "+1-555-1234",
+  "dateOfBirth": "2000-05-15",
+  "contactNumber": "+1-555-1235",
   "speciality": "Cardiology"
 }
 

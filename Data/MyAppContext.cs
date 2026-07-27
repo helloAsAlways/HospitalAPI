@@ -12,6 +12,12 @@ public class MyAppContext: DbContext
     public DbSet<Patient> Patient { get; set; }
     public DbSet<Person> Persons { get; set; }
     public DbSet<MedicalRecord> MedicalRecords { get; set; }
+    
+    public DbSet<Nurse> Nurses { get; set; }
+    public DbSet<Diagnosis> Diagnosis { get; set; }
+    public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<TreatmentPlan> TreatmentPlans { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Map C# class names to your existing snake_case Postgres tables
@@ -20,6 +26,11 @@ public class MyAppContext: DbContext
         modelBuilder.Entity<Appointment>().ToTable("appointments");
         modelBuilder.Entity<Person>().ToTable("persons");
         modelBuilder.Entity<MedicalRecord>().ToTable("medical_records"); 
+            
+        modelBuilder.Entity<Nurse>().ToTable("nurses");
+        modelBuilder.Entity<Diagnosis>().ToTable("diagnoses");
+        modelBuilder.Entity<Schedule>().ToTable("schedules");
+        modelBuilder.Entity<TreatmentPlan>().ToTable("treatment_plans");
  
         // Appointment -> Doctor: keep the appointment if the doctor is removed
         modelBuilder.Entity<Appointment>()
@@ -42,8 +53,9 @@ public class MyAppContext: DbContext
         // Diagnosis -> TreatmentPlan: cascade delete
         modelBuilder.Entity<TreatmentPlan>()
             .HasOne(t => t.Diagnosis)
-            .WithMany(d => d.TreatementPlans)
+            .WithMany(d => d.TreatmentPlans)
             .OnDelete(DeleteBehavior.Cascade);
+        
         
         modelBuilder.Entity<Patient>()
             .HasOne(p => p.Person)
@@ -54,5 +66,22 @@ public class MyAppContext: DbContext
             .HasOne(d => d.Person)
             .WithOne(pe => pe.Doctor)
             .HasForeignKey<Doctor>(d => d.PersonId);
+        
+        modelBuilder.Entity<Nurse>()
+            .HasOne(n => n.Person)
+            .WithOne(pe => pe.Nurse)
+            .HasForeignKey<Nurse>(n => n.PersonId);
+        
+        modelBuilder.Entity<Schedule>()
+            .HasOne(s => s.Doctor)
+            .WithMany(d => d.Schedules)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Diagnosis>()
+            .HasOne(d => d.Appointment)
+            .WithOne(a => a.Diagnosis)
+            .HasForeignKey<Diagnosis>(d => d.AppointmentId);
+        
+
     }
 }

@@ -13,4 +13,5 @@ public class Person
  
     public Patient? Patient { get; set; }
     public Doctor? Doctor { get; set; }
+    public Nurse? Nurse { get; set; }
 }

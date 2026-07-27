@@ -60,5 +60,15 @@ namespace WebApplication2.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMedicalRecord(long id)
+        {
+            var record = await _context.MedicalRecords.FindAsync(id);
+            if (record == null) return NotFound();
+ 
+            _context.MedicalRecords.Remove(record);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

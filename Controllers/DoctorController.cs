@@ -21,12 +21,14 @@ public class DoctorController(MyAppContext context) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctors()
     {
-        return await context.Doctor.ToListAsync();
+        return await context.Doctor.Include(d => d.Person).ToListAsync();
     }
     [HttpGet("{id}")]
     public async Task<ActionResult<Doctor>> GetDoctor(long id)
     {
-        var doctor = await context.Doctor.FindAsync(id);
+        var doctor = await context.
+            Doctor.Include(d => d.Person)
+            .FirstOrDefaultAsync(d => d.PersonId == id);
 
         if (doctor == null) return NotFound();
 
@@ -54,5 +56,27 @@ public class DoctorController(MyAppContext context) : ControllerBase
         await context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetDoctor), new { id = doctor.PersonId }, doctor);
+    }
+    
+    [HttpPut("{id}")] 
+    public async Task<IActionResult> UpdateDoctor(long id, Doctor doctor)
+    {
+        var existing = await context.Doctor.FindAsync(id);
+        if (existing == null) return NotFound();
+ 
+        existing.Speciality = doctor.Speciality;
+ 
+        await context.SaveChangesAsync();
+        return NoContent();
+    }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteDoctor(long id)
+    {
+        var doctor = await context.Doctor.FindAsync(id);
+        if (doctor == null) return NotFound();
+ 
+        context.Doctor.Remove(doctor);
+        await context.SaveChangesAsync();
+        return NoContent();
     }
 }

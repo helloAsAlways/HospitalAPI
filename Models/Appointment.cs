@@ -24,4 +24,5 @@ public class Appointment
     public DateTimeOffset ScheduledTime { get; set; }
     public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
     public DateTimeOffset CreatedAt { get; set; }
+    public Diagnosis? Diagnosis { get; set; }
 }
