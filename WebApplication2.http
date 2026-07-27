@@ -30,7 +30,7 @@ POST {{WebApplication2_HostAddress}}/api/Doctor/
 Content-Type: application/json
 
 {
-  "name": "Dr. John Smith",
+  "name": "Dr. John Siddique",
   "date_of_birth": "1980-05-15",
   "contact_number": "+1-555-1234",
   "speciality": "Cardiology"
@@ -39,11 +39,10 @@ Content-Type: application/json
 
 ###
 
-POST {{WebApplication2_HostAddress}}/api/MedicalRecords/
+PUT {{WebApplication2_HostAddress}}/api/MedicalRecords/13
 Content-Type: application/json
 
 {
-  "patient_id": 13,
-  "doctor_id": 13
+  "patient_id": 13
 }
 
