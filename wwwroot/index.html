@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hospital API Console</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --border: #dde1e6;
+    --text: #1c2128;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --ok-bg: #ecfdf3;
+    --ok-text: #027a48;
+    --err-bg: #fef3f2;
+    --err-text: #b42318;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    padding: 16px 24px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  header h1 { font-size: 18px; margin: 0; }
+  header span { color: var(--muted); font-size: 13px; }
+  .layout { display: flex; min-height: calc(100vh - 57px); }
+  nav {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 12px;
+  }
+  nav button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 9px 10px;
+    margin-bottom: 4px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  nav button:hover { background: #eef1f5; }
+  nav button.active { background: var(--accent); color: #fff; }
+  main { flex: 1; padding: 20px 28px; max-width: 1100px; }
+  .toast {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: none;
+    white-space: pre-wrap;
+  }
+  .toast.ok { display: block; background: var(--ok-bg); color: var(--ok-text); }
+  .toast.err { display: block; background: var(--err-bg); color: var(--err-text); }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .panel h3 { margin: 0 0 12px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  form.entity-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 16px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--muted); }
+  .field input, .field select, .field textarea {
+    padding: 7px 9px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  .field textarea { min-height: 60px; resize: vertical; }
+  .form-actions { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 4px; }
+  button.btn {
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.btn.primary:hover { background: var(--accent-hover); }
+  button.btn.danger { background: #fff; border-color: var(--danger); color: var(--danger); }
+  button.btn.danger:hover { background: var(--danger); color: #fff; }
+  button.btn.small { padding: 4px 9px; font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  tr:hover td { background: #fafbfc; }
+  .row-actions { display: flex; gap: 6px; white-space: nowrap; }
+  .empty { color: var(--muted); padding: 16px 0; font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.Pending { background: #fef3c7; color: #92400e; }
+  .badge.Booked { background: #dbeafe; color: #1e40af; }
+  .badge.Cancelled { background: #fee2e2; color: #991b1b; }
+  .badge.Completed { background: #dcfce7; color: #166534; }
+  .muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hospital API Console</h1>
+  <span>manual CRUD client for every endpoint on this API</span>
+</header>
+<div class="layout">
+  <nav id="nav"></nav>
+  <main>
+    <div id="toast" class="toast"></div>
+    <h2 id="resource-title"></h2>
+    <p class="muted" id="resource-path" style="margin-top:0"></p>
+
+    <div class="panel">
+      <h3 id="form-title">Create</h3>
+      <form id="entity-form" class="entity-form"></form>
+    </div>
+
+    <div class="panel">
+      <h3>Records</h3>
+      <div id="table-wrap"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+const STATUS_LABELS = ["Pending", "Booked", "Cancelled", "Completed"];
+
+const RESOURCES = [
+  {
+    key: "patients", label: "Patients", path: "/api/Patients", idField: "personId",
+    columns: [
+      { header: "ID", get: r => r.personId },
+      { header: "Name", get: r => r.person?.name ?? "" },
+      { header: "DOB", get: r => r.person?.dateOfBirth ?? "" },
+      { header: "Contact", get: r => r.person?.contactNumber ?? "" },
+      { header: "Medical History", get: r => r.medicalHistoryNotes ?? "" },
+    ],
+    createFields: [
+      { name: "name", label: "Name", type: "text", required: true },
+      { name: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
+      { name: "contactNumber", label: "Contact Number", type: "text" },
+      { name: "medicalHistoryNotes", label: "Medical History Notes", type: "textarea" },
+    ],
+    editFields: [
+      { name: "medicalHistoryNotes", label: "Medical History Notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "doctors", label: "Doctors", path: "/api/Doctor", idField: "personId",
+    columns: [
+      { header: "ID", get: r => r.personId },
+      { header: "Name", get: r => r.person?.name ?? "" },
+      { header: "Speciality", get: r => r.speciality ?? "" },
+      { header: "Contact", get: r => r.person?.contactNumber ?? "" },
+    ],
+    createFields: [
+      { name: "name", label: "Name", type: "text", required: true },
+      { name: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
+      { name: "contactNumber", label: "Contact Number", type: "text" },
+      { name: "speciality", label: "Speciality", type: "text", required: true },
+    ],
+    editFields: [
+      { name: "speciality", label: "Speciality", type: "text", required: true },
+    ],
+  },
+  {
+    key: "nurses", label: "Nurses", path: "/api/Nurses", idField: "personId",
+    columns: [
+      { header: "ID", get: r => r.personId },
+      { header: "Name", get: r => r.person?.name ?? "" },
+      { header: "Department", get: r => r.department ?? "" },
+      { header: "Contact", get: r => r.person?.contactNumber ?? "" },
+    ],
+    createFields: [
+      { name: "name", label: "Name", type: "text", required: true },
+      { name: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
+      { name: "contactNumber", label: "Contact Number", type: "text" },
+      { name: "department", label: "Department", type: "text", required: true },
+    ],
+    editFields: [
+      { name: "department", label: "Department", type: "text", required: true },
+    ],
+  },
+  {
+    key: "appointments", label: "Appointments", path: "/api/Appointments", idField: "id",
+    columns: [
+      { header: "ID", get: r => r.id },
+      { header: "Patient", get: r => refLabel(r.patient, r.patientId) },
+      { header: "Doctor", get: r => refLabel(r.doctor, r.doctorId) },
+      { header: "Scheduled", get: r => formatDateTime(r.scheduledTime) },
+      { header: "Status", get: r => `<span class="badge ${STATUS_LABELS[r.status] ?? r.status}">${STATUS_LABELS[r.status] ?? r.status}</span>`, html: true },
+    ],
+    createFields: [
+      { name: "patientId", label: "Patient", type: "select-ref", refKey: "patients", required: true },
+      { name: "doctorId", label: "Doctor", type: "select-ref", refKey: "doctors", required: true },
+      { name: "scheduledTime", label: "Scheduled Time", type: "datetime-local", required: true },
+    ],
+    editFields: [
+      { name: "scheduledTime", label: "Scheduled Time", type: "datetime-local", required: true },
+      { name: "status", label: "Status", type: "select", options: STATUS_LABELS.map((l, i) => ({ value: i, label: l })) },
+    ],
+    extraActions: [
+      { label: "Cancel", method: "PATCH", suffix: "/cancel", confirm: "Cancel this appointment?" },
+    ],
+  },
+  {
+    key: "medicalRecords", label: "Medical Records", path: "/api/MedicalRecords", idField: "id",
+    columns: [
+      { header: "ID", get: r => r.id },
+      { header: "Patient", get: r => refLabel(r.patient, r.patientId) },
+      { header: "Doctor", get: r => refLabel(r.doctor, r.doctorId) },
+      { header: "Notes", get: r => r.notes ?? "" },
+      { header: "Created", get: r => formatDateTime(r.createdAt) },
+    ],
+    createFields: [
+      { name: "patientId", label: "Patient", type: "select-ref", refKey: "patients", required: true },
+      { name: "doctorId", label: "Doctor", type: "select-ref", refKey: "doctors", required: true },
+      { name: "notes", label: "Notes", type: "textarea" },
+    ],
+    editFields: [
+      { name: "notes", label: "Notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "diagnoses", label: "Diagnoses", path: "/api/Diagnoses", idField: "id",
+    columns: [
+      { header: "ID", get: r => r.id },
+      { header: "Appointment", get: r => r.appointmentId },
+      { header: "Description", get: r => r.description ?? "" },
+      { header: "Date", get: r => r.date ?? "" },
+    ],
+    createFields: [
+      { name: "appointmentId", label: "Appointment", type: "select-ref", refKey: "appointments", required: true },
+      { name: "description", label: "Description", type: "textarea", required: true },
+      { name: "date", label: "Date", type: "date", required: true },
+    ],
+    editFields: [
+      { name: "description", label: "Description", type: "textarea", required: true },
+      { name: "date", label: "Date", type: "date", required: true },
+    ],
+  },
+  {
+    key: "schedules", label: "Schedules", path: "/api/Schedules", idField: "id",
+    columns: [
+      { header: "ID", get: r => r.id },
+      { header: "Doctor", get: r => refLabel(r.doctor, r.doctorId) },
+      { header: "Date", get: r => r.date ?? "" },
+      { header: "Start", get: r => r.startTime ?? "" },
+      { header: "End", get: r => r.endTime ?? "" },
+    ],
+    createFields: [
+      { name: "doctorId", label: "Doctor", type: "select-ref", refKey: "doctors", required: true },
+      { name: "date", label: "Date", type: "date", required: true },
+      { name: "startTime", label: "Start Time", type: "time", required: true },
+      { name: "endTime", label: "End Time", type: "time", required: true },
+    ],
+    editFields: [
+      { name: "date", label: "Date", type: "date", required: true },
+      { name: "startTime", label: "Start Time", type: "time", required: true },
+      { name: "endTime", label: "End Time", type: "time", required: true },
+    ],
+  },
+  {
+    key: "treatmentPlans", label: "Treatment Plans", path: "/api/TreatmentPlans", idField: "id",
+    columns: [
+      { header: "ID", get: r => r.id },
+      { header: "Diagnosis", get: r => r.diagnosisId },
+      { header: "Description", get: r => r.description ?? "" },
+      { header: "Duration", get: r => r.duration ?? "" },
+    ],
+    createFields: [
+      { name: "diagnosisId", label: "Diagnosis", type: "select-ref", refKey: "diagnoses", required: true },
+      { name: "description", label: "Description", type: "textarea" },
+      { name: "duration", label: "Duration", type: "text" },
+    ],
+    editFields: [
+      { name: "description", label: "Description", type: "textarea" },
+      { name: "duration", label: "Duration", type: "text" },
+    ],
+  },
+];
+
+const byKey = Object.fromEntries(RESOURCES.map(r => [r.key, r]));
+let current = RESOURCES[0];
+let editingId = null; // non-null while the form is in "edit" mode
+const refCache = {}; // key -> array of records, used to populate select-ref dropdowns
+
+function refLabel(nested, id) {
+  if (nested && nested.person) return `${id} - ${nested.person.name}`;
+  return String(id);
+}
+
+function formatDateTime(v) {
+  if (!v) return "";
+  const d = new Date(v);
+  return isNaN(d) ? v : d.toLocaleString();
+}
+
+function showToast(message, isError) {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.className = "toast " + (isError ? "err" : "ok");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => { el.className = "toast"; }, isError ? 8000 : 3000);
+}
+
+async function api(path, options) {
+  const res = await fetch(path, {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  if (res.status === 204) return null;
+  const text = await res.text();
+  let body = null;
+  try { body = text ? JSON.parse(text) : null; } catch { body = text; }
+  if (!res.ok) {
+    const message = typeof body === "string" ? body : (body?.title || JSON.stringify(body));
+    throw new Error(`${res.status} ${res.statusText}: ${message || "request failed"}`);
+  }
+  return body;
+}
+
+function buildNav() {
+  const nav = document.getElementById("nav");
+  nav.innerHTML = "";
+  for (const r of RESOURCES) {
+    const btn = document.createElement("button");
+    btn.textContent = r.label;
+    btn.className = r.key === current.key ? "active" : "";
+    btn.onclick = () => selectResource(r.key);
+    nav.appendChild(btn);
+  }
+}
+
+async function selectResource(key) {
+  current = byKey[key];
+  editingId = null;
+  buildNav();
+  document.getElementById("resource-title").textContent = current.label;
+  document.getElementById("resource-path").textContent = current.path;
+
+  // ✅ Load both in parallel!
+  await Promise.all([renderForm(), renderTable()]);
+}
+
+async function ensureRefData(refKey) {
+  if (!refCache[refKey]) {
+    const res = byKey[refKey];
+    refCache[refKey] = await api(res.path);
+  }
+  return refCache[refKey];
+}
+
+async function fieldInputHtml(field, value) {
+  const val = value ?? "";
+  const req = field.required ? "required" : "";
+  if (field.type === "textarea") {
+    return `<textarea name="${field.name}" ${req}>${escapeHtml(val)}</textarea>`;
+  }
+  if (field.type === "select") {
+    const opts = field.options.map(o => `<option value="${o.value}" ${String(o.value) === String(val) ? "selected" : ""}>${o.label}</option>`).join("");
+    return `<select name="${field.name}" ${req}>${opts}</select>`;
+  }
+  if (field.type === "select-ref") {
+    const items = await ensureRefData(field.refKey);
+    const refRes = byKey[field.refKey];
+    const opts = items.map(it => {
+      const id = it[refRes.idField];
+      const label = it.person ? `${id} - ${it.person.name}` : `#${id}`;
+      return `<option value="${id}" ${String(id) === String(val) ? "selected" : ""}>${escapeHtml(label)}</option>`;
+    }).join("");
+    return `<select name="${field.name}" ${req}><option value="">-- select --</option>${opts}</select>`;
+  }
+  return `<input type="${field.type}" name="${field.name}" value="${escapeHtml(val)}" ${req} ${field.type === "time" ? "step=\"60\"" : ""} />`;
+}
+
+function escapeHtml(v) {
+  return String(v).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+async function renderForm(record) {
+  const form = document.getElementById("entity-form");
+  const fields = editingId ? current.editFields : current.createFields;
+  document.getElementById("form-title").textContent = editingId
+    ? `Edit ${current.label.replace(/s$/, "")} #${editingId}`
+    : `Create ${current.label.replace(/s$/, "")}`;
+
+  const parts = await Promise.all(fields.map(async f => {
+    const raw = record ? extractValue(f, record) : "";
+    return `<div class="field"><label>${f.label}${f.required ? " *" : ""}</label>${await fieldInputHtml(f, raw)}</div>`;
+  }));
+
+  form.innerHTML = parts.join("") + `
+    <div class="form-actions">
+      <button type="submit" class="btn primary">${editingId ? "Save changes" : "Create"}</button>
+      ${editingId ? '<button type="button" class="btn" id="cancel-edit">Cancel</button>' : ""}
+    </div>`;
+
+  if (editingId) {
+    document.getElementById("cancel-edit").onclick = async () => {
+      editingId = null;
+      await renderForm();
+    };
+  }
+}
+
+function extractValue(field, record) {
+  if (field.type === "datetime-local") {
+    const v = record[field.name];
+    if (!v) return "";
+    const d = new Date(v);
+    const pad = n => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  if (field.type === "time") {
+    const v = record[field.name];
+    return v ? v.slice(0, 5) : "";
+  }
+  return record[field.name] ?? "";
+}
+
+function coerceFormValue(field, raw) {
+  if (field.type === "select-ref" || field.type === "select") {
+    return raw === "" ? null : Number(raw);
+  }
+  if (field.type === "time" && raw && raw.length === 5) {
+    return raw + ":00";
+  }
+  if (field.type === "datetime-local" && raw) {
+    return new Date(raw).toISOString();
+  }
+  return raw === "" ? null : raw;
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  const fields = editingId ? current.editFields : current.createFields;
+  const form = e.target;
+  const payload = {};
+  for (const f of fields) {
+    payload[f.name] = coerceFormValue(f, form.elements[f.name].value);
+  }
+
+  try {
+    if (editingId) {
+      await api(`${current.path}/${editingId}`, { method: "PUT", body: JSON.stringify(payload) });
+      showToast(`Updated ${current.label.replace(/s$/, "")} #${editingId}`);
+    } else {
+      await api(current.path, { method: "POST", body: JSON.stringify(payload) });
+      showToast(`Created new ${current.label.replace(/s$/, "")}`);
+    }
+    editingId = null;
+    delete refCache[current.key]; // this resource may now feed other resources' dropdowns
+    await renderForm();
+    await renderTable();
+  } catch (err) {
+    showToast(err.message, true);
+  }
+}
+
+async function renderTable() {
+  const wrap = document.getElementById("table-wrap");
+  wrap.innerHTML = '<p class="empty">Loading…</p>';
+  let items;
+  try {
+    items = await api(current.path);
+  } catch (err) {
+    wrap.innerHTML = "";
+    showToast(err.message, true);
+    return;
+  }
+  if (!items || items.length === 0) {
+    wrap.innerHTML = '<p class="empty">No records yet.</p>';
+    return;
+  }
+
+  const head = current.columns.map(c => `<th>${c.header}</th>`).join("") + "<th>Actions</th>";
+  const rows = items.map(item => {
+    const cells = current.columns.map(c => {
+      const v = c.get(item);
+      return `<td>${c.html ? v : escapeHtml(v)}</td>`;
+    }).join("");
+    const id = item[current.idField];
+    const extra = (current.extraActions || []).map(a =>
+      `<button class="btn small" data-action="extra" data-label="${a.label}" data-id="${id}">${a.label}</button>`
+    ).join("");
+    return `<tr>${cells}<td><div class="row-actions">
+      <button class="btn small" data-action="edit" data-id="${id}">Edit</button>
+      <button class="btn small danger" data-action="delete" data-id="${id}">Delete</button>
+      ${extra}
+    </div></td></tr>`;
+  }).join("");
+
+  wrap.innerHTML = `<table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+
+  wrap.querySelectorAll("button[data-action]").forEach(btn => {
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    btn.onclick = async () => {
+      if (action === "edit") {
+        const record = items.find(it => String(it[current.idField]) === String(id));
+        editingId = id;
+        await renderForm(record);
+        document.getElementById("entity-form").scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (action === "delete") {
+        if (!confirm(`Delete ${current.label.replace(/s$/, "")} #${id}? This cannot be undone.`)) return;
+        try {
+          await api(`${current.path}/${id}`, { method: "DELETE" });
+          showToast(`Deleted #${id}`);
+          delete refCache[current.key];
+          await renderTable();
+        } catch (err) {
+          showToast(err.message, true);
+        }
+      } else if (action === "extra") {
+        const def = current.extraActions.find(a => a.label === btn.dataset.label);
+        if (def.confirm && !confirm(def.confirm)) return;
+        try {
+          await api(`${current.path}/${id}${def.suffix}`, { method: def.method });
+          showToast(`${def.label} applied to #${id}`);
+          await renderTable();
+        } catch (err) {
+          showToast(err.message, true);
+        }
+      }
+    };
+  });
+}
+
+document.getElementById("entity-form").addEventListener("submit", submitForm);
+
+selectResource(current.key);
+</script>
+</body>
+</html>

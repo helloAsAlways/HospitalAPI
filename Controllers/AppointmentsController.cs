@@ -37,13 +37,7 @@ public class AppointmentsController(MyAppContext _context) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Appointment>> BookAppointment(Appointment appointment)
     {
-        var patientExists = await _context.Patient.AnyAsync(p => p.PersonId == appointment.PatientId);
-        if (!patientExists) return BadRequest("PatientId does not exist. ");
-
-        var doctorExists = await _context.Doctor.AnyAsync(d => d.PersonId == appointment.DoctorId);
-        if (!doctorExists) return BadRequest("DoctorId does not exist. ");
-
-        appointment.Status = AppointmentStatus.Booked;
+          appointment.Status = AppointmentStatus.Booked;
         appointment.CreatedAt = DateTimeOffset.UtcNow;
 
         _context.Appointment.Add(appointment);
@@ -64,28 +58,28 @@ public class AppointmentsController(MyAppContext _context) : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
-    [HttpPatch("{id}/cancel")]
-    public async Task<IActionResult> CancelAppointment(long id)
-    {
-        var appointment = await _context.Appointment.FindAsync(id);
-        if (appointment == null) return NotFound();
+     [HttpPatch("{id}/cancel")]
+        public async Task<IActionResult> CancelAppointment(long id)
+        {
+            var appointment = await _context.Appointment.FindAsync(id);
+            if (appointment == null) return NotFound();
  
-        appointment.Status = AppointmentStatus.Cancelled;
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+            appointment.Status = AppointmentStatus.Cancelled;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
  
-    // DELETE: api/appointments/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAppointment(long id)
-    {
-        var appointment = await _context.Appointment.FindAsync(id);
-        if (appointment == null) return NotFound();
+        // DELETE: api/appointments/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAppointment(long id)
+        {
+            var appointment = await _context.Appointment.FindAsync(id);
+            if (appointment == null) return NotFound();
  
-        _context.Appointment.Remove(appointment);
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
+            _context.Appointment.Remove(appointment);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
 
 }
     

@@ -46,3 +46,7 @@ Content-Type: application/json
   "patient_id": 13
 }
 
+
+###
+{{WebApplication2_HostAddress}}/api/Appointments
+Accept: application/json

@@ -1,0 +1,187 @@
+@WebApplication2_HostAddress = http://localhost:5110
+
+### =========================================================
+### DEMO SCRIPT — walk through in this order.
+### Story: create staff, book an appointment, diagnose, treat.
+### =========================================================
+
+
+### 1. Create a doctor
+# Person + Doctor are created together in one request (shared-key pattern)
+POST {{WebApplication2_HostAddress}}/api/Doctors
+Content-Type: application/json
+
+{
+  "name": "Dr. John Siddique",
+  "dateOfBirth": "1985-05-15",
+  "contactNumber": "+1-555-1235",
+  "speciality": "Cardiology"
+}
+
+
+### 2. Create a patient
+POST {{WebApplication2_HostAddress}}/api/Patients
+Content-Type: application/json
+
+{
+  "name": "Amira Chen",
+  "dateOfBirth": "1998-02-20",
+  "contactNumber": "+1-555-9981",
+  "medicalHistoryNotes": "No known allergies."
+}
+
+
+### 3. Create a nurse
+POST {{WebApplication2_HostAddress}}/api/Nurses
+Content-Type: application/json
+
+{
+  "name": "Priya Nair",
+  "dateOfBirth": "1992-11-03",
+  "contactNumber": "+1-555-2244",
+  "department": "Cardiology Ward"
+}
+
+
+### 4. Confirm all three exist and note their IDs (personId) from the responses above
+GET {{WebApplication2_HostAddress}}/api/Doctors
+
+### 
+GET {{WebApplication2_HostAddress}}/api/Patients
+
+###
+GET {{WebApplication2_HostAddress}}/api/Nurses
+
+
+### 5. Give the doctor a schedule slot
+# Replace doctorId with the personId from step 1
+POST {{WebApplication2_HostAddress}}/api/Schedules
+Content-Type: application/json
+
+{
+  "doctorId": 1,
+  "date": "2026-08-01",
+  "startTime": "09:00:00",
+  "endTime": "17:00:00"
+}
+
+
+### 7. Fetch the appointment back - shows the nested Patient/Doctor/Person data
+GET {{WebApplication2_HostAddress}}/api/Appointments/
+
+### 6. Book an appointment (patient + doctor)
+# Replace patientId / doctorId with the personIds from steps 1-2
+POST {{WebApplication2_HostAddress}}/api/Appointments
+Content-Type: application/json
+
+{
+  "patientId": 21,
+  "doctorId": 34,
+  "scheduledTime": "2026-08-01T10:00:00Z"
+}
+
+
+### 7. Fetch the appointment back - shows the nested Patient/Doctor/Person data
+# Replace {id} with the id returned by step 6
+GET {{WebApplication2_HostAddress}}/api/Appointments/1
+
+
+### 8. Try booking with a doctor that doesn't exist - shows validation working
+POST {{WebApplication2_HostAddress}}/api/Appointments
+Content-Type: application/json
+
+{
+  "patientId": 2,
+  "doctorId": 9999,
+  "scheduledTime": "2026-08-01T11:00:00Z"
+}
+# Expect: 400 Bad Request, "DoctorId does not exist."
+
+
+### 9. Add a diagnosis for the appointment
+# Replace appointmentId with the id from step 6
+POST {{WebApplication2_HostAddress}}/api/Diagnoses
+Content-Type: application/json
+
+{
+  "appointmentId": 1,
+  "description": "Mild arrhythmia, recommend follow-up ECG.",
+  "date": "2026-08-01"
+}
+
+
+### 10. Try adding a second diagnosis to the same appointment - shows one-to-one being enforced
+POST {{WebApplication2_HostAddress}}/api/Diagnoses
+Content-Type: application/json
+
+{
+  "appointmentId": 1,
+  "description": "Duplicate diagnosis attempt",
+  "date": "2026-08-01"
+}
+# Expect: 409 Conflict, "This appointment already has a diagnosis."
+
+
+### 11. Add a treatment plan under that diagnosis
+# Replace diagnosisId with the id from step 9
+POST {{WebApplication2_HostAddress}}/api/TreatmentPlans
+Content-Type: application/json
+
+{
+  "diagnosisId": 1,
+  "description": "Beta-blocker course, low dose.",
+  "duration": "4 weeks"
+}
+
+
+### 12. Log a general medical record note (separate from the formal diagnosis)
+POST {{WebApplication2_HostAddress}}/api/MedicalRecords
+Content-Type: application/json
+
+{
+  "patientId": 2,
+  "doctorId": 1,
+  "notes": "Patient reports occasional palpitations, no chest pain."
+}
+
+
+### 13. Update - change the doctor's speciality
+# Replace {id} with the doctor's personId
+PUT {{WebApplication2_HostAddress}}/api/Doctors/1
+Content-Type: application/json
+
+{
+  "speciality": "Interventional Cardiology"
+}
+
+
+### 14. Update - patient's medical history notes
+PUT {{WebApplication2_HostAddress}}/api/Patients/2
+Content-Type: application/json
+
+{
+  "medicalHistoryNotes": "No known allergies. Follow-up ECG scheduled."
+}
+
+
+### 15. Cancel the appointment (status transition, not a delete)
+PATCH {{WebApplication2_HostAddress}}/api/Appointments/1/cancel
+
+
+### 16. Confirm the cancellation
+GET {{WebApplication2_HostAddress}}/api/Appointments/1
+# Expect: status is now "Cancelled"
+
+
+### 17. Delete - remove the schedule slot (doctor no longer available that day)
+DELETE {{WebApplication2_HostAddress}}/api/Schedules/1
+
+
+### 18. Full picture - list everything at the end
+GET {{WebApplication2_HostAddress}}/api/MedicalRecords
+
+###
+GET {{WebApplication2_HostAddress}}/api/Diagnoses
+
+###
+GET {{WebApplication2_HostAddress}}/api/TreatmentPlans

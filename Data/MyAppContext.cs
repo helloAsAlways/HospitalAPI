@@ -44,12 +44,11 @@ public class MyAppContext: DbContext
             .WithMany(p => p.Appointments)
             .OnDelete(DeleteBehavior.Cascade);
         
+     
         modelBuilder.Entity<Appointment>()
             .Property(a => a.Status)
-            .HasConversion(
-                v => v.ToString().ToLower(),
-                v => (AppointmentStatus)Enum.Parse(typeof(AppointmentStatus), v, true));
- 
+            .HasConversion<string>();
+        
         // Diagnosis -> TreatmentPlan: cascade delete
         modelBuilder.Entity<TreatmentPlan>()
             .HasOne(t => t.Diagnosis)
