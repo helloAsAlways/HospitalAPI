@@ -227,37 +227,17 @@ The API listens on the ports from `launchSettings.json`:
 > snake_case tables. Ensure `persons`, `patients`, `doctors`, `appointments`, etc. exist first,
 > or scaffold them with `dotnet ef migrations add Init && dotnet ef database update`.
 
-## Configuration & secrets
+## Configuration & secrets (connecting with Supabase)
 
-> ⚠️ **Do not commit database credentials.** Earlier revisions shipped a live Supabase
-> password. Rotate it, keep secrets out of source control, and use the steps below.
 
-`Program.cs` currently reads the connection string from the **`DBCONNECTION` environment
-variable**. To use the safer [.NET user-secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets)
-store in development, make this one small change so configuration is honoured too:
+`Program.cs` reads the connection string from the **`DBCONNECTION` environment
+variable**. 
+To connect to supabase, Database Connection string is required. This string can be acquired through project in individual supabase account.  
 
-```csharp
-// Program.cs — read from configuration first, fall back to the env var
-var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? Environment.GetEnvironmentVariable("DBCONNECTION");
-```
-
-Then store the secret locally (never committed):
-
-```bash
-dotnet user-secrets init
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" \
+Replace each **<>** according to given description.
   "Host=<your-host>.pooler.supabase.com;Port=6543;Database=postgres;Username=<user>;Password=<password>;SSL Mode=Require;Trust Server Certificate=true"
 ```
 
-For CI or containers, set the `DBCONNECTION` environment variable instead. A committed
-template with **no real values** is provided in
-[`appsettings.Development.json.example`](appsettings.Development.json.example) — copy it to
-`appsettings.Development.json` (which is git-ignored) and fill in your own values.
-
-To purge the leaked password from history, rotate it in Supabase first, then rewrite history
-with [`git filter-repo`](https://github.com/newren/git-filter-repo) or the BFG Repo-Cleaner.
 
 ## API reference
 
