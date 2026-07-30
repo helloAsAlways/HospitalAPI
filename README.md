@@ -366,17 +366,3 @@ curl -X PATCH http://localhost:5110/api/Appointments/1/cancel
 > The repo also includes `WebApplication2.http`, which runs these calls directly from Visual
 > Studio or VS Code (with the REST Client extension).
 
-## Notes & caveats
-
-1. **Secrets in source control** — rotate the leaked Supabase password, move secrets to
-   user-secrets / environment variables, and purge them from git history.
-2. **Unused packages** — the SQL Server EF provider, Dapper and the Supabase client libraries
-   are referenced but not used; only Npgsql + EF Core are wired up.
-3. **Inconsistent route naming** — every resource is plural except doctors (`/api/Doctor`);
-   renaming to `DoctorsController` would make the surface predictable.
-4. **No migrations, no auth** — entities assume the tables already exist, and no endpoint has
-   authentication/authorization. Both are fine for a course project but are blockers for any
-   real deployment holding medical data.
-5. **OpenAPI is mapped outside Development** — in `Program.cs`, `app.MapOpenApi()` runs only
-   when the environment is *not* Development (the reverse of the usual setup). Double-check
-   that's intended.
