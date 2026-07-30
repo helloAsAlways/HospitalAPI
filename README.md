@@ -235,6 +235,7 @@ variable**.
 To connect to supabase, Database Connection string is required. This string can be acquired through project in individual supabase account.  
 
 Replace each **<>** according to given description.
+
   "Host=<your-host>.pooler.supabase.com;Port=6543;Database=postgres;Username=<user>;Password=<password>;SSL Mode=Require;Trust Server Certificate=true"
 ```
 
