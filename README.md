@@ -272,7 +272,7 @@ All paths are relative to the base URL. Routes use the controller name, so **cas
 | PUT    | `/api/Patients/{id}`  | Update `MedicalHistoryNotes` only.                      |
 | DELETE | `/api/Patients/{id}`  | Delete patient row (Person is kept).                    |
 
-### Doctors — `/api/Doctor` ⚠️ *singular route*
+### Doctors — `/api/Doctor` 
 | Method | Path                | Description                                     |
 |--------|---------------------|-------------------------------------------------|
 | GET    | `/api/Doctor`       | List all doctors.                               |
