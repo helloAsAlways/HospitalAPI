@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HospitalAPI — Developer Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF3F3; --panel:#FFFFFF; --ink:#0F1B21; --muted:#5C707A;
+  --teal:#0E3A3A; --accent:#0FA37F; --accent-soft:#E4F3EE; --border:#D8E1E4;
+  --code-bg:#0C1A1F; --code-tx:#D7E6E2; --code-mut:#7FA79C;
+  --get:#0FA37F; --post:#2563EB; --put:#D97706; --patch:#7C3AED; --delete:#DC2626;
+  --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --serif:'IBM Plex Serif',Georgia,serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:var(--mono);font-size:0.86em;background:var(--accent-soft);
+  color:#0B5C48;padding:0.12em 0.4em;border-radius:5px;border:1px solid #D2E9E1}
+h1,h2,h3{line-height:1.2;letter-spacing:-0.01em}
+
+/* ---- layout ---- */
+.wrap{display:grid;grid-template-columns:262px minmax(0,1fr);gap:0;
+  max-width:1280px;margin:0 auto;align-items:start}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;padding:34px 22px 40px;
+  border-right:1px solid var(--border)}
+.side .brand{font-weight:700;font-size:1.02rem;color:var(--teal);
+  display:flex;align-items:center;gap:9px;margin-bottom:2px}
+.side .pulse{width:10px;height:10px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 0 rgba(15,163,127,.5);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(15,163,127,.45)}70%{box-shadow:0 0 0 9px rgba(15,163,127,0)}100%{box-shadow:0 0 0 0 rgba(15,163,127,0)}}
+.side .ver{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin:0 0 22px 19px}
+.nav a{display:block;color:var(--muted);font-size:.9rem;padding:6px 10px;border-radius:7px;
+  border-left:2px solid transparent;font-weight:500}
+.nav a:hover{background:var(--panel);color:var(--ink);text-decoration:none}
+.nav a.active{color:var(--teal);border-left-color:var(--accent);background:var(--panel);font-weight:600}
+.nav .grp{font-family:var(--mono);text-transform:uppercase;font-size:.66rem;letter-spacing:.13em;
+  color:#9AAAB1;margin:20px 0 6px 10px}
+
+.main{padding:0 clamp(20px,4vw,64px) 100px;min-width:0}
+
+/* ---- hero ---- */
+.hero{padding:56px 0 30px;border-bottom:1px solid var(--border);margin-bottom:8px;position:relative}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent);font-weight:600;margin-bottom:14px}
+.hero h1{font-size:clamp(2.4rem,5vw,3.5rem);margin:0 0 14px;color:var(--teal);font-weight:700}
+.hero h1 span{color:var(--accent)}
+.hero .lead{font-size:1.16rem;color:#33474E;max-width:60ch;margin:0 0 24px}
+.ecg{width:100%;height:46px;margin:6px 0 22px;color:var(--accent)}
+.ecg path{stroke:currentColor;stroke-width:2;fill:none;
+  stroke-dasharray:1400;stroke-dashoffset:1400;animation:trace 3.4s ease-out .3s forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{font-family:var(--mono);font-size:.76rem;background:var(--panel);border:1px solid var(--border);
+  color:#2C4149;padding:5px 11px;border-radius:20px}
+.cta{display:inline-flex;align-items:center;gap:8px;margin-top:26px;background:var(--teal);
+  color:#EAF6F3;padding:11px 20px;border-radius:9px;font-weight:600;font-size:.94rem}
+.cta:hover{background:#0B2D2D;text-decoration:none}
+
+/* ---- sections ---- */
+section{padding:44px 0;border-bottom:1px solid var(--border)}
+section>h2{font-size:1.7rem;color:var(--teal);margin:0 0 6px;display:flex;align-items:baseline;gap:12px}
+section>h2 .n{font-family:var(--mono);font-size:.9rem;color:var(--accent);font-weight:600}
+section>.sub{color:var(--muted);margin:0 0 26px;font-size:1.02rem}
+h3{font-size:1.14rem;margin:30px 0 10px;color:var(--ink)}
+p{margin:0 0 15px}
+
+/* ---- cards / grid ---- */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.card h4{margin:0 0 6px;font-size:1rem;color:var(--teal);font-family:var(--sans)}
+.card .k{font-family:var(--mono);font-size:.78rem;color:var(--accent);font-weight:600}
+.card p{margin:0;font-size:.92rem;color:#3B4E55}
+
+/* ---- code blocks ---- */
+pre{background:var(--code-bg);color:var(--code-tx);border-radius:11px;padding:18px 20px;
+  overflow-x:auto;font-family:var(--mono);font-size:.83rem;line-height:1.7;margin:0 0 18px;
+  border:1px solid #12303a}
+pre .c{color:var(--code-mut)}
+pre .k{color:#6FD0B4}
+pre .s{color:#E4B888}
+.filetree{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:20px 22px;
+  font-family:var(--mono);font-size:.82rem;line-height:1.85;color:#33474E;overflow-x:auto}
+.filetree .d{color:var(--teal);font-weight:600}
+.filetree .cm{color:var(--muted)}
+
+/* ---- diagram ---- */
+.diagram{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;
+  overflow-x:auto}
+.diagram svg{min-width:760px;width:100%;height:auto;display:block}
+
+/* ---- tables ---- */
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);
+  border-radius:11px;overflow:hidden;font-size:.9rem;margin:0 0 18px}
+th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:#F4F8F8;font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:none}
+td code{white-space:nowrap}
+
+/* ---- endpoints ---- */
+.ep{background:var(--panel);border:1px solid var(--border);border-radius:11px;margin:0 0 10px;overflow:hidden}
+.ep-row{display:flex;align-items:center;gap:14px;padding:13px 18px}
+.m{font-family:var(--mono);font-weight:600;font-size:.72rem;color:#fff;padding:4px 9px;border-radius:6px;min-width:60px;text-align:center;flex:none}
+.m.get{background:var(--get)} .m.post{background:var(--post)} .m.put{background:var(--put)}
+.m.patch{background:var(--patch)} .m.delete{background:var(--delete)}
+.path{font-family:var(--mono);font-size:.9rem;color:var(--ink);font-weight:500}
+.desc{color:var(--muted);font-size:.9rem;margin-left:auto;text-align:right}
+.grouphead{display:flex;align-items:baseline;gap:12px;margin:26px 0 12px}
+.grouphead h3{margin:0}
+.grouphead .route{font-family:var(--mono);font-size:.8rem;color:var(--accent)}
+
+/* ---- callouts ---- */
+.note{border-radius:11px;padding:16px 20px;margin:0 0 16px;font-size:.94rem;border:1px solid}
+.note.warn{background:#FEF6EC;border-color:#F3D9AE;color:#7A4B12}
+.note.info{background:var(--accent-soft);border-color:#C7E6DC;color:#0B5140}
+.note.danger{background:#FDECEC;border-color:#F3C0C0;color:#8A2020}
+.note strong{font-weight:700}
+.note code{background:rgba(255,255,255,.6);border-color:transparent}
+
+footer{padding:34px 0 10px;color:var(--muted);font-size:.85rem}
+footer .mono{font-family:var(--mono)}
+
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);
+    padding:20px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+  .side .ver,.nav .grp{display:none}
+  .nav{display:flex;flex-wrap:wrap;gap:4px}
+  .nav a{padding:5px 9px;border-left:none;font-size:.82rem}
+  .g2,.g3{grid-template-columns:1fr}
+  .desc{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .ecg path{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <div class="brand"><span class="pulse"></span>HospitalAPI</div>
+    <div class="ver">v1 · ASP.NET Core 9.0</div>
+    <nav class="nav">
+      <a href="#overview" class="active">Overview</a>
+      <a href="#stack">Tech stack</a>
+      <div class="grp">Design</div>
+      <a href="#architecture">Architecture</a>
+      <a href="#model">Data model &amp; UML</a>
+      <a href="#structure">Project structure</a>
+      <div class="grp">Get running</div>
+      <a href="#setup">Setup</a>
+      <a href="#api">API reference</a>
+      <a href="#examples">Usage examples</a>
+      <div class="grp">Before you ship</div>
+      <a href="#notes">Notes &amp; caveats</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <div class="eyebrow">Developer Documentation</div>
+      <h1>Hospital<span>API</span></h1>
+      <p class="lead">A RESTful backend for managing a hospital's people and clinical
+        workflow — patients, doctors, nurses, appointments, diagnoses, treatment plans,
+        medical records and schedules — built on ASP.NET Core and Entity Framework Core
+        over a PostgreSQL database.</p>
+      <svg class="ecg" viewBox="0 0 1000 46" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,23 L360,23 L378,23 L390,8 L404,40 L418,4 L432,34 L446,23 L520,23 L534,14 L548,32 L562,23 L1000,23"/>
+      </svg>
+      <div class="badges">
+        <span class="badge">.NET 9.0</span>
+        <span class="badge">EF Core 9</span>
+        <span class="badge">PostgreSQL / Supabase</span>
+        <span class="badge">Npgsql</span>
+        <span class="badge">OpenAPI</span>
+        <span class="badge">9 entities · 8 controllers</span>
+      </div>
+      <a class="cta" href="https://github.com/helloAsAlways/HospitalAPI" target="_blank" rel="noopener">
+        View repository on GitHub →</a>
+    </header>
+
+    <section id="overview">
+      <h2><span class="n">01</span> Overview</h2>
+      <p class="sub">What the project is and the problem it models.</p>
+      <p>HospitalAPI is a Web API (no UI) that exposes CRUD endpoints for the core
+        records a hospital keeps. The domain is organised around a single
+        <code>Person</code> record that each <code>Patient</code>, <code>Doctor</code>
+        and <code>Nurse</code> extends by sharing its primary key, so one human is stored
+        once and can play a clinical role without duplicating name, date of birth or
+        contact details.</p>
+      <p>On top of those people sit the clinical events: a <code>Patient</code> books an
+        <code>Appointment</code> with a <code>Doctor</code>; an appointment may produce one
+        <code>Diagnosis</code>; a diagnosis may lead to one or more <code>TreatmentPlan</code>s.
+        Doctors publish availability as <code>Schedule</code>s, and either party can attach
+        free-text <code>MedicalRecord</code>s. The solution folder is named
+        <code>HospitalAPI</code>, but the .NET project inside it still carries the template
+        name <code>WebApplication2</code> — that name appears in namespaces and the
+        <code>.csproj</code>.</p>
+      <div class="grid g3" style="margin-top:22px">
+        <div class="card"><div class="k">PATTERN</div><h4>Shared-key subtypes</h4>
+          <p>Patient / Doctor / Nurse each own a 1:1 identifying relationship with Person via a shared <code>PersonId</code>.</p></div>
+        <div class="card"><div class="k">STYLE</div><h4>Thin controllers</h4>
+          <p>Controllers talk straight to the EF Core <code>DbContext</code>. No service or repository layer sits in between.</p></div>
+        <div class="card"><div class="k">STORAGE</div><h4>Postgres, snake_case</h4>
+          <p>Entities map to existing snake_case tables through <code>UseSnakeCaseNamingConvention()</code>.</p></div>
+      </div>
+    </section>
+
+    <section id="stack">
+      <h2><span class="n">02</span> Tech stack</h2>
+      <p class="sub">The frameworks and packages the project depends on.</p>
+      <table>
+        <thead><tr><th>Layer</th><th>Technology</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>Runtime</td><td><code>.NET 9.0</code></td><td>Target framework; nullable reference types and implicit usings are enabled.</td></tr>
+          <tr><td>Web</td><td><code>Microsoft.NET.Sdk.Web</code></td><td>Controller-based ASP.NET Core Web API.</td></tr>
+          <tr><td>ORM</td><td><code>Microsoft.EntityFrameworkCore</code> 9</td><td>Entity mapping, change tracking, LINQ queries.</td></tr>
+          <tr><td>Provider</td><td><code>Npgsql.EntityFrameworkCore.PostgreSQL</code></td><td>PostgreSQL provider for EF Core.</td></tr>
+          <tr><td>Naming</td><td><code>EFCore.NamingConventions</code></td><td>Maps PascalCase entities to snake_case columns/tables.</td></tr>
+          <tr><td>Database</td><td>PostgreSQL on <strong>Supabase</strong></td><td>Hosted Postgres reached over the connection string.</td></tr>
+          <tr><td>Docs</td><td><code>Microsoft.AspNetCore.OpenApi</code></td><td>Generates the OpenAPI description document.</td></tr>
+        </tbody>
+      </table>
+      <div class="note info"><strong>Heads-up on the package list.</strong> The
+        <code>.csproj</code> also references the SQL Server EF provider, Dapper, and the
+        Supabase client libraries, none of which the running code uses — only Npgsql is
+        actually wired up in <code>Program.cs</code>. See <a href="#notes">Notes &amp; caveats</a>.</div>
+    </section>
+
+    <section id="architecture">
+      <h2><span class="n">03</span> Architecture</h2>
+      <p class="sub">How a request travels through the app.</p>
+      <p>The app is deliberately flat. A request hits a controller action, which uses the
+        injected <code>MyAppContext</code> (the EF Core <code>DbContext</code>) to read or
+        write, and EF translates that to SQL against PostgreSQL. There is no separate
+        business or data-access layer — the controller <em>is</em> the handler.</p>
+      <pre><span class="c">// Program.cs — the whole pipeline</span>
+HTTP request
+   <span class="k">│</span>
+   ▼  Routing            <span class="c">// [Route("api/[controller]")]</span>
+Controller action        <span class="c">// e.g. AppointmentsController.BookAppointment()</span>
+   <span class="k">│</span>
+   ▼  MyAppContext        <span class="c">// injected DbContext (Scoped)</span>
+Entity Framework Core    <span class="c">// LINQ → SQL, change tracking, SaveChangesAsync()</span>
+   <span class="k">│</span>
+   ▼  Npgsql
+PostgreSQL (Supabase)    <span class="c">// snake_case tables</span></pre>
+      <h3>The Person shared-key pattern</h3>
+      <p>This is the one idea worth understanding before reading the code. <code>Patient</code>,
+        <code>Doctor</code> and <code>Nurse</code> do not have their own identity — they reuse
+        <code>Person.Id</code> as their own primary key <em>and</em> as the foreign key back to
+        <code>Person</code>. Because <code>PersonId</code> matches neither EF's <code>Id</code>
+        nor <code>&lt;Type&gt;Id</code> convention, each of those classes needs an explicit
+        <code>[Key]</code> attribute. Creating a patient therefore inserts a <code>Person</code>
+        and a <code>Patient</code> row together in one <code>SaveChangesAsync()</code>:</p>
+      <pre><span class="c">// PatientsController.CreatePatient — Person + Patient in one transaction</span>
+<span class="k">var</span> person = <span class="k">new</span> Person { Name = req.Name, DateOfBirth = req.DateOfBirth, ... };
+<span class="k">var</span> patient = <span class="k">new</span> Patient { Person = person, MedicalHistoryNotes = req.Notes };
+_context.Patient.Add(patient);          <span class="c">// EF inserts Person first,</span>
+<span class="k">await</span> _context.SaveChangesAsync();      <span class="c">// then wires the shared PersonId</span></pre>
+      <p>A consequence you can see in the endpoints: the <code>{id}</code> for a patient,
+        doctor or nurse is the <strong>PersonId</strong>, and their <code>PUT</code> actions
+        only edit role-specific fields (a patient's notes, a doctor's speciality). Editing a
+        shared field like <code>Name</code> would belong on a Person-level action, which the
+        project does not currently expose.</p>
+    </section>
+
+    <section id="model">
+      <h2><span class="n">04</span> Data model &amp; UML</h2>
+      <p class="sub">Nine entities and the relationships EF Core configures between them.</p>
+      <div class="diagram"><svg viewBox="0 0 1160 1060" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Mono', ui-monospace, monospace" role="img" aria-label="UML class diagram of the HospitalAPI data model">
+<defs>
+  <marker id="assocArrow" markerWidth="11" markerHeight="11" refX="9" refY="5" orient="auto">
+    <path d="M1,1 L9,5 L1,9" fill="none" stroke="#7C93A0" stroke-width="1.4"/>
+  </marker>
+  <marker id="idDiamond" markerWidth="16" markerHeight="12" refX="14" refY="6" orient="auto">
+    <path d="M1,6 L7,2 L13,6 L7,10 Z" fill="#FFFFFF" stroke="#0FA37F" stroke-width="1.4"/>
+  </marker>
+</defs>
+<path d="M170,268 L170,228 L525,176" fill="none" stroke="#0FA37F" stroke-width="1.5" marker-end="url(#idDiamond)"/>
+<text x="186" y="258" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="511" y="192" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<path d="M990,268 L990,228 L635,176" fill="none" stroke="#0FA37F" stroke-width="1.5" marker-end="url(#idDiamond)"/>
+<text x="974" y="258" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="649" y="192" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<path d="M690,100 L880,95" fill="none" stroke="#0FA37F" stroke-width="1.5" marker-end="url(#idDiamond)"/>
+<text x="864" y="87" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="706" y="92" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<path d="M170,354 L170,470 L308,500" fill="none" stroke="#7C93A0" stroke-width="1.5" marker-end="url(#assocArrow)"/>
+<text x="184" y="372" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="294" y="492" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">0..*</text>
+<path d="M990,354 L990,394 L422,484 L422,500" fill="none" stroke="#7C93A0" stroke-width="1.5" marker-end="url(#assocArrow)"/>
+<text x="1004" y="372" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="438" y="492" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">0..*</text>
+<path d="M225,354 L225,424 L678,470 L678,500" fill="none" stroke="#7C93A0" stroke-width="1.5" marker-end="url(#assocArrow)"/>
+<text x="239" y="372" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="664" y="492" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">0..*</text>
+<path d="M990,354 L990,384 L792,480 L792,500" fill="none" stroke="#7C93A0" stroke-width="1.5" marker-end="url(#assocArrow)"/>
+<text x="974" y="372" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="808" y="492" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">0..*</text>
+<path d="M1030,354 L1030,496 L1020,496 L1020,520" fill="none" stroke="#7C93A0" stroke-width="1.5" marker-end="url(#assocArrow)"/>
+<text x="1044" y="372" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="1036" y="512" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">0..*</text>
+<path d="M365,674 L365,760" fill="none" stroke="#7C93A0" stroke-width="1.5" marker-end="url(#assocArrow)"/>
+<text x="379" y="692" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="383" y="752" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">0..1</text>
+<path d="M365,890 L365,928" fill="none" stroke="#7C93A0" stroke-width="1.5" marker-end="url(#assocArrow)"/>
+<text x="379" y="908" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">1</text>
+<text x="383" y="920" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">0..*</text>
+<rect x="470" y="24" width="220" height="152" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M470,33 q0,-9 9,-9 h202 q9,0 9,9 v25 h-220 z" fill="#0E3A3A"/>
+<text x="580.0" y="47" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">Person</text>
+<text x="482" y="73" font-size="12" fill="#26383F"><tspan font-weight="600">Id</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK»</tspan></text>
+<rect x="471" y="80" width="218" height="22" fill="#F4F8F8"/>
+<text x="482" y="95" font-size="12" fill="#26383F"><tspan font-weight="600">Name</tspan><tspan fill="#5C707A"> : string</tspan></text>
+<text x="482" y="117" font-size="12" fill="#26383F"><tspan font-weight="600">DateOfBirth</tspan><tspan fill="#5C707A"> : DateOnly</tspan></text>
+<rect x="471" y="124" width="218" height="22" fill="#F4F8F8"/>
+<text x="482" y="139" font-size="12" fill="#26383F"><tspan font-weight="600">ContactNumber</tspan><tspan fill="#5C707A"> : string?</tspan></text>
+<text x="482" y="161" font-size="12" fill="#26383F"><tspan font-weight="600">CreatedAt</tspan><tspan fill="#5C707A"> : DateTimeOffset</tspan></text>
+<line x1="470" y1="58" x2="690" y2="58" stroke="#D8E1E4"/>
+<rect x="880" y="52" width="220" height="86" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M880,61 q0,-9 9,-9 h202 q9,0 9,9 v25 h-220 z" fill="#0E3A3A"/>
+<text x="990.0" y="75" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">Nurse</text>
+<text x="892" y="101" font-size="12" fill="#26383F"><tspan font-weight="600">PersonId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK,FK»</tspan></text>
+<rect x="881" y="108" width="218" height="22" fill="#F4F8F8"/>
+<text x="892" y="123" font-size="12" fill="#26383F"><tspan font-weight="600">Department</tspan><tspan fill="#5C707A"> : string</tspan></text>
+<line x1="880" y1="86" x2="1100" y2="86" stroke="#D8E1E4"/>
+<rect x="60" y="268" width="220" height="86" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M60,277 q0,-9 9,-9 h202 q9,0 9,9 v25 h-220 z" fill="#0E3A3A"/>
+<text x="170.0" y="291" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">Patient</text>
+<text x="72" y="317" font-size="12" fill="#26383F"><tspan font-weight="600">PersonId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK,FK»</tspan></text>
+<rect x="61" y="324" width="218" height="22" fill="#F4F8F8"/>
+<text x="72" y="339" font-size="12" fill="#26383F"><tspan font-weight="600">MedicalHistoryNotes</tspan><tspan fill="#5C707A"> : string?</tspan></text>
+<line x1="60" y1="302" x2="280" y2="302" stroke="#D8E1E4"/>
+<rect x="880" y="268" width="220" height="86" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M880,277 q0,-9 9,-9 h202 q9,0 9,9 v25 h-220 z" fill="#0E3A3A"/>
+<text x="990.0" y="291" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">Doctor</text>
+<text x="892" y="317" font-size="12" fill="#26383F"><tspan font-weight="600">PersonId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK,FK»</tspan></text>
+<rect x="881" y="324" width="218" height="22" fill="#F4F8F8"/>
+<text x="892" y="339" font-size="12" fill="#26383F"><tspan font-weight="600">Speciality</tspan><tspan fill="#5C707A"> : string</tspan></text>
+<line x1="880" y1="302" x2="1100" y2="302" stroke="#D8E1E4"/>
+<rect x="250" y="500" width="230" height="174" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M250,509 q0,-9 9,-9 h212 q9,0 9,9 v25 h-230 z" fill="#0E3A3A"/>
+<text x="365.0" y="523" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">Appointment</text>
+<text x="262" y="549" font-size="12" fill="#26383F"><tspan font-weight="600">Id</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK»</tspan></text>
+<rect x="251" y="556" width="228" height="22" fill="#F4F8F8"/>
+<text x="262" y="571" font-size="12" fill="#26383F"><tspan font-weight="600">PatientId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «FK»</tspan></text>
+<text x="262" y="593" font-size="12" fill="#26383F"><tspan font-weight="600">DoctorId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «FK»</tspan></text>
+<rect x="251" y="600" width="228" height="22" fill="#F4F8F8"/>
+<text x="262" y="615" font-size="12" fill="#26383F"><tspan font-weight="600">ScheduledTime</tspan><tspan fill="#5C707A"> : DateTimeOffset</tspan></text>
+<text x="262" y="637" font-size="12" fill="#26383F"><tspan font-weight="600">Status</tspan><tspan fill="#5C707A"> : AppointmentStatus</tspan></text>
+<rect x="251" y="644" width="228" height="22" fill="#F4F8F8"/>
+<text x="262" y="659" font-size="12" fill="#26383F"><tspan font-weight="600">CreatedAt</tspan><tspan fill="#5C707A"> : DateTimeOffset</tspan></text>
+<line x1="250" y1="534" x2="480" y2="534" stroke="#D8E1E4"/>
+<rect x="620" y="500" width="230" height="152" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M620,509 q0,-9 9,-9 h212 q9,0 9,9 v25 h-230 z" fill="#0E3A3A"/>
+<text x="735.0" y="523" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">MedicalRecord</text>
+<text x="632" y="549" font-size="12" fill="#26383F"><tspan font-weight="600">Id</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK»</tspan></text>
+<rect x="621" y="556" width="228" height="22" fill="#F4F8F8"/>
+<text x="632" y="571" font-size="12" fill="#26383F"><tspan font-weight="600">PatientId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «FK»</tspan></text>
+<text x="632" y="593" font-size="12" fill="#26383F"><tspan font-weight="600">DoctorId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «FK»</tspan></text>
+<rect x="621" y="600" width="228" height="22" fill="#F4F8F8"/>
+<text x="632" y="615" font-size="12" fill="#26383F"><tspan font-weight="600">Notes</tspan><tspan fill="#5C707A"> : string?</tspan></text>
+<text x="632" y="637" font-size="12" fill="#26383F"><tspan font-weight="600">CreatedAt</tspan><tspan fill="#5C707A"> : DateTimeOffset</tspan></text>
+<line x1="620" y1="534" x2="850" y2="534" stroke="#D8E1E4"/>
+<rect x="910" y="520" width="220" height="152" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M910,529 q0,-9 9,-9 h202 q9,0 9,9 v25 h-220 z" fill="#0E3A3A"/>
+<text x="1020.0" y="543" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">Schedule</text>
+<text x="922" y="569" font-size="12" fill="#26383F"><tspan font-weight="600">Id</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK»</tspan></text>
+<rect x="911" y="576" width="218" height="22" fill="#F4F8F8"/>
+<text x="922" y="591" font-size="12" fill="#26383F"><tspan font-weight="600">DoctorId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «FK»</tspan></text>
+<text x="922" y="613" font-size="12" fill="#26383F"><tspan font-weight="600">Date</tspan><tspan fill="#5C707A"> : DateOnly</tspan></text>
+<rect x="911" y="620" width="218" height="22" fill="#F4F8F8"/>
+<text x="922" y="635" font-size="12" fill="#26383F"><tspan font-weight="600">StartTime</tspan><tspan fill="#5C707A"> : TimeOnly</tspan></text>
+<text x="922" y="657" font-size="12" fill="#26383F"><tspan font-weight="600">EndTime</tspan><tspan fill="#5C707A"> : TimeOnly</tspan></text>
+<line x1="910" y1="554" x2="1130" y2="554" stroke="#D8E1E4"/>
+<rect x="250" y="760" width="230" height="130" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M250,769 q0,-9 9,-9 h212 q9,0 9,9 v25 h-230 z" fill="#0E3A3A"/>
+<text x="365.0" y="783" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">Diagnosis</text>
+<text x="262" y="809" font-size="12" fill="#26383F"><tspan font-weight="600">Id</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK»</tspan></text>
+<rect x="251" y="816" width="228" height="22" fill="#F4F8F8"/>
+<text x="262" y="831" font-size="12" fill="#26383F"><tspan font-weight="600">AppointmentId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «FK,uniq»</tspan></text>
+<text x="262" y="853" font-size="12" fill="#26383F"><tspan font-weight="600">Description</tspan><tspan fill="#5C707A"> : string</tspan></text>
+<rect x="251" y="860" width="228" height="22" fill="#F4F8F8"/>
+<text x="262" y="875" font-size="12" fill="#26383F"><tspan font-weight="600">Date</tspan><tspan fill="#5C707A"> : DateOnly</tspan></text>
+<line x1="250" y1="794" x2="480" y2="794" stroke="#D8E1E4"/>
+<rect x="250" y="928" width="230" height="130" rx="9" fill="#FFFFFF" stroke="#D8E1E4" stroke-width="1.4" filter="drop-shadow(0 6px 14px rgba(15,27,33,0.08))"/>
+<path d="M250,937 q0,-9 9,-9 h212 q9,0 9,9 v25 h-230 z" fill="#0E3A3A"/>
+<text x="365.0" y="951" text-anchor="middle" font-size="14.5" font-weight="700" fill="#EAF6F3" font-family="'IBM Plex Sans', sans-serif" letter-spacing="0.3">TreatmentPlan</text>
+<text x="262" y="977" font-size="12" fill="#26383F"><tspan font-weight="600">Id</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «PK»</tspan></text>
+<rect x="251" y="984" width="228" height="22" fill="#F4F8F8"/>
+<text x="262" y="999" font-size="12" fill="#26383F"><tspan font-weight="600">DiagnosisId</tspan><tspan fill="#5C707A"> : long</tspan><tspan fill="#0E7C63" font-weight="700"> «FK»</tspan></text>
+<text x="262" y="1021" font-size="12" fill="#26383F"><tspan font-weight="600">Description</tspan><tspan fill="#5C707A"> : string?</tspan></text>
+<rect x="251" y="1028" width="228" height="22" fill="#F4F8F8"/>
+<text x="262" y="1043" font-size="12" fill="#26383F"><tspan font-weight="600">Duration</tspan><tspan fill="#5C707A"> : string?</tspan></text>
+<line x1="250" y1="962" x2="480" y2="962" stroke="#D8E1E4"/>
+<rect x="620" y="760" width="470" height="150" rx="10" fill="#F7FBFB" stroke="#D8E1E4"/>
+<text x="638" y="788" font-size="13.5" font-weight="700" fill="#0F1B21" font-family="'IBM Plex Sans', sans-serif">Legend</text>
+<path d="M638,812 L690,812" stroke="#0FA37F" stroke-width="1.6" marker-end="url(#idDiamond)"/>
+<text x="710" y="816" font-size="12" fill="#26383F" font-family="'IBM Plex Sans', sans-serif">Shared primary key (1:1 identifying) — subtype shares Person.Id</text>
+<path d="M638,842 L690,842" stroke="#7C93A0" stroke-width="1.6" marker-end="url(#assocArrow)"/>
+<text x="710" y="846" font-size="12" fill="#26383F" font-family="'IBM Plex Sans', sans-serif">Foreign-key association (arrow points to the child side)</text>
+<text x="638" y="872" font-size="11.5" fill="#5C707A" font-family="'IBM Plex Sans', sans-serif">«PK» primary key   «FK» foreign key   «uniq» unique constraint</text>
+<text x="638" y="892" font-size="11.5" fill="#5C707A" font-family="'IBM Plex Sans', sans-serif">Delete rules: Doctor→Appointment = SetNull; all others shown = Cascade</text>
+</svg></div>
+
+      <h3>Relationships &amp; delete behaviour</h3>
+      <p>All relationships and their on-delete rules are declared in
+        <code>MyAppContext.OnModelCreating</code>. The delete rules are intentional, not
+        defaults:</p>
+      <table>
+        <thead><tr><th>From</th><th>To</th><th>Cardinality</th><th>On delete</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>Person</code></td><td><code>Patient / Doctor / Nurse</code></td><td>1 : 1</td><td>—</td><td>Identifying; role shares <code>Person.Id</code>.</td></tr>
+          <tr><td><code>Patient</code></td><td><code>Appointment</code></td><td>1 : 0..*</td><td><strong>Cascade</strong></td><td>Removing a patient removes their appointments.</td></tr>
+          <tr><td><code>Doctor</code></td><td><code>Appointment</code></td><td>1 : 0..*</td><td><strong>SetNull</strong></td><td>Removing a doctor keeps the appointment (doctor cleared).</td></tr>
+          <tr><td><code>Patient / Doctor</code></td><td><code>MedicalRecord</code></td><td>1 : 0..*</td><td>Default</td><td>Records reference both participants.</td></tr>
+          <tr><td><code>Doctor</code></td><td><code>Schedule</code></td><td>1 : 0..*</td><td><strong>Cascade</strong></td><td>Removing a doctor removes their availability.</td></tr>
+          <tr><td><code>Appointment</code></td><td><code>Diagnosis</code></td><td>1 : 0..1</td><td><strong>Cascade</strong></td><td>One diagnosis per appointment (unique FK).</td></tr>
+          <tr><td><code>Diagnosis</code></td><td><code>TreatmentPlan</code></td><td>1 : 0..*</td><td><strong>Cascade</strong></td><td>Plans belong to a diagnosis.</td></tr>
+        </tbody>
+      </table>
+      <div class="note info"><strong>Enum storage.</strong> <code>Appointment.Status</code>
+        (<code>Pending / Booked / Cancelled / Completed</code>) is persisted as a lowercase
+        string through a value converter rather than as an integer, so the column stays
+        human-readable.</div>
+    </section>
+
+    <section id="structure">
+      <h2><span class="n">05</span> Project structure</h2>
+      <p class="sub">Where things live in the repository.</p>
+      <div class="filetree">HospitalAPI/
+├─ <span class="d">Models/</span>              <span class="cm"># EF Core entities (the domain)</span>
+│  ├─ Person.cs         <span class="cm"># shared base record</span>
+│  ├─ Patient.cs  Doctor.cs  Nurse.cs
+│  ├─ Appointment.cs    <span class="cm"># + AppointmentStatus enum</span>
+│  ├─ Diagnosis.cs  TreatmentPlan.cs
+│  └─ MedicalRecord.cs  Schedule.cs
+├─ <span class="d">Data/</span>
+│  └─ MyAppContext.cs   <span class="cm"># DbContext + OnModelCreating mapping</span>
+├─ <span class="d">Controllers/</span>         <span class="cm"># one REST controller per entity</span>
+│  ├─ PatientsController.cs   DoctorController.cs
+│  ├─ NursesController.cs     AppointmentsController.cs
+│  ├─ DiagnosesController.cs  TreatmentPlanController.cs
+│  ├─ SchedulesController.cs  MedicalRecordsController.cs
+├─ <span class="d">Properties/</span>
+│  └─ launchSettings.json  <span class="cm"># local ports + env vars</span>
+├─ Program.cs           <span class="cm"># startup / DI / pipeline</span>
+├─ appsettings.json     <span class="cm"># config (see security note)</span>
+└─ WebApplication2.csproj</div>
+    </section>
+
+    <section id="setup">
+      <h2><span class="n">06</span> Setup</h2>
+      <p class="sub">Get the API running locally.</p>
+      <h3>Prerequisites</h3>
+      <div class="grid g3">
+        <div class="card"><div class="k">SDK</div><h4>.NET 9 SDK</h4><p>Install from the official .NET downloads. Verify with <code>dotnet --version</code>.</p></div>
+        <div class="card"><div class="k">DATABASE</div><h4>A PostgreSQL instance</h4><p>A Supabase project (or any Postgres) with the hospital tables created.</p></div>
+        <div class="card"><div class="k">OPTIONAL</div><h4>An HTTP client</h4><p>The bundled <code>.http</code> file, curl, Postman, or Swagger UI.</p></div>
+      </div>
+
+      <h3>1 — Clone</h3>
+      <pre>git clone https://github.com/helloAsAlways/HospitalAPI.git
+cd HospitalAPI</pre>
+
+      <h3>2 — Configure the database connection</h3>
+      <p><code>Program.cs</code> reads the connection string from a <code>DBCONNECTION</code>
+        environment variable, so the cleanest option is to set it there. For local
+        development the project uses <code>Properties/launchSettings.json</code>; replace the
+        placeholders with your own Supabase credentials:</p>
+      <pre><span class="c">// launchSettings.json → profiles → http → environmentVariables</span>
+<span class="s">"DBCONNECTION"</span>: <span class="s">"Host=&lt;your-host&gt;.pooler.supabase.com;Port=6543;</span>
+<span class="s">              Database=postgres;Username=&lt;your-user&gt;;</span>
+<span class="s">              Password=&lt;your-password&gt;;SSL Mode=Require;</span>
+<span class="s">              Trust Server Certificate=true"</span></pre>
+      <h3>3 — Restore &amp; run</h3>
+      <pre>dotnet restore
+dotnet run</pre>
+      <p>The API listens on the ports from <code>launchSettings.json</code>:</p>
+      <table>
+        <thead><tr><th>Profile</th><th>Base URL</th></tr></thead>
+        <tbody>
+          <tr><td><code>http</code></td><td><code>http://localhost:5110</code></td></tr>
+          <tr><td><code>https</code></td><td><code>https://localhost:7299</code></td></tr>
+        </tbody>
+      </table>
+      <div class="note info"><strong>On the schema.</strong> There are no EF Core migrations
+        in the repo — the entities map onto <em>existing</em> snake_case tables. Make sure
+        your Postgres already has <code>persons</code>, <code>patients</code>,
+        <code>doctors</code>, <code>appointments</code> and the rest before calling the API,
+        or add migrations with <code>dotnet ef migrations add Init</code>.</div>
+    </section>
+
+    <section id="api">
+      <h2><span class="n">07</span> API reference</h2>
+      <p class="sub">Every endpoint, grouped by resource. All paths are relative to the base
+        URL. Routes use the controller name, so casing matters.</p>
+
+      <div class="grouphead"><h3>Patients</h3><span class="route">/api/Patients</span></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Patients</span><span class="desc">List all patients (with Person)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Patients/{id}</span><span class="desc">One patient by PersonId (with appointments &amp; records)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/Patients</span><span class="desc">Create Person + Patient together</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/Patients/{id}</span><span class="desc">Update MedicalHistoryNotes only</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/Patients/{id}</span><span class="desc">Delete patient row (Person is kept)</span></div></div>
+
+      <div class="grouphead"><h3>Doctors</h3><span class="route">/api/Doctor</span></div>
+      <div class="note warn" style="margin-top:0"><strong>Note the singular route.</strong>
+        This controller is <code>DoctorController</code>, so its route is <code>/api/Doctor</code>,
+        while every other resource is plural. Easy to trip over.</div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Doctor</span><span class="desc">List all doctors</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Doctor/{id}</span><span class="desc">One doctor by PersonId</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/Doctor</span><span class="desc">Create Person + Doctor (name, dob, speciality)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/Doctor/{id}</span><span class="desc">Update Speciality</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/Doctor/{id}</span><span class="desc">Delete doctor</span></div></div>
+
+      <div class="grouphead"><h3>Nurses</h3><span class="route">/api/Nurses</span></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Nurses</span><span class="desc">List all nurses</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Nurses/{id}</span><span class="desc">One nurse by PersonId</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/Nurses</span><span class="desc">Create Person + Nurse (name, dob, department)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/Nurses/{id}</span><span class="desc">Update Department</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/Nurses/{id}</span><span class="desc">Delete nurse</span></div></div>
+
+      <div class="grouphead"><h3>Appointments</h3><span class="route">/api/Appointments</span></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Appointments</span><span class="desc">List all (with patient &amp; doctor)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Appointments/{id}</span><span class="desc">One appointment</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/Appointments</span><span class="desc">Book (validates patient &amp; doctor; sets status = booked)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/Appointments/{id}</span><span class="desc">Update ScheduledTime + Status</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m patch">PATCH</span><span class="path">/api/Appointments/{id}/cancel</span><span class="desc">Set status = cancelled</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/Appointments/{id}</span><span class="desc">Delete appointment</span></div></div>
+
+      <div class="grouphead"><h3>Diagnoses</h3><span class="route">/api/Diagnoses</span></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Diagnoses</span><span class="desc">List all (with appointment &amp; plans)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Diagnoses/{id}</span><span class="desc">One diagnosis</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/Diagnoses</span><span class="desc">Create (409 if appointment already diagnosed)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/Diagnoses/{id}</span><span class="desc">Update Description + Date</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/Diagnoses/{id}</span><span class="desc">Delete diagnosis</span></div></div>
+
+      <div class="grouphead"><h3>Treatment plans</h3><span class="route">/api/TreatmentPlans</span></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/TreatmentPlans</span><span class="desc">List all (with diagnosis)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/TreatmentPlans/{id}</span><span class="desc">One plan</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/TreatmentPlans</span><span class="desc">Create (validates diagnosis)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/TreatmentPlans/{id}</span><span class="desc">Update Description + Duration</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/TreatmentPlans/{id}</span><span class="desc">Delete plan</span></div></div>
+
+      <div class="grouphead"><h3>Medical records</h3><span class="route">/api/MedicalRecords</span></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/MedicalRecords</span><span class="desc">List all (with patient &amp; doctor)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/MedicalRecords/{id}</span><span class="desc">One record</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/MedicalRecords</span><span class="desc">Create (validates patient &amp; doctor)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/MedicalRecords/{id}</span><span class="desc">Update Notes</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/MedicalRecords/{id}</span><span class="desc">Delete record</span></div></div>
+
+      <div class="grouphead"><h3>Schedules</h3><span class="route">/api/Schedules</span></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Schedules</span><span class="desc">List all (with doctor)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m get">GET</span><span class="path">/api/Schedules/{id}</span><span class="desc">One schedule</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m post">POST</span><span class="path">/api/Schedules</span><span class="desc">Create (validates doctor)</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m put">PUT</span><span class="path">/api/Schedules/{id}</span><span class="desc">Update Date, StartTime, EndTime</span></div></div>
+      <div class="ep"><div class="ep-row"><span class="m delete">DELETE</span><span class="path">/api/Schedules/{id}</span><span class="desc">Delete schedule</span></div></div>
+    </section>
+
+    <section id="examples">
+      <h2><span class="n">08</span> Usage examples</h2>
+      <p class="sub">A minimal end-to-end flow: create a doctor, then a patient, then book them together.</p>
+
+      <h3>Create a doctor</h3>
+      <pre>curl -X POST http://localhost:5110/api/Doctor \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "name": "Dr. John Siddique",
+    "dateOfBirth": "1985-05-15",
+    "contactNumber": "+60-12-345-6789",
+    "speciality": "Cardiology"
+  }'</span>
+
+<span class="c"># 201 Created → returns the doctor, whose personId is the new id</span></pre>
+
+      <h3>Create a patient</h3>
+      <pre>curl -X POST http://localhost:5110/api/Patients \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "name": "Amir Hakim",
+    "dateOfBirth": "1998-11-02",
+    "contactNumber": "+60-11-222-3333",
+    "medicalHistoryNotes": "No known allergies"
+  }'</span></pre>
+
+      <h3>Book an appointment</h3>
+      <p>Use the two <code>personId</code> values returned above. The server checks both
+        exist, then stamps the appointment as <code>booked</code>:</p>
+      <pre>curl -X POST http://localhost:5110/api/Appointments \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "patientId": 12,
+    "doctorId": 7,
+    "scheduledTime": "2026-08-01T09:30:00Z"
+  }'</span>
+
+<span class="c"># 400 Bad Request if patientId or doctorId does not exist</span></pre>
+
+      <h3>Cancel it</h3>
+      <pre>curl -X PATCH http://localhost:5110/api/Appointments/1/cancel
+<span class="c"># 204 No Content — status is now "cancelled"</span></pre>
+      <div class="note info"><strong>Tip.</strong> The repo includes
+        <code>WebApplication2.http</code>, which runs these calls directly from Visual Studio
+        or VS Code (with the REST Client extension) without needing curl.</div>
+    </section>
+
+    <section id="notes">
+      <h2><span class="n">09</span> Notes &amp; caveats</h2>
+      <p class="sub">Known rough edges worth addressing before this goes anywhere near real use.</p>
+      <div class="note warn"><strong>1 · Unused packages.</strong> The <code>.csproj</code>
+        references the SQL Server EF provider, Dapper and the Supabase client libraries, but
+        the code only uses Npgsql + EF Core. Trimming them shrinks the dependency surface and
+        removes ambiguity about which database the project targets.</div>
+      <div class="note warn"><strong>2 · Inconsistent route naming.</strong> Every resource is
+        plural (<code>/api/Patients</code>, <code>/api/Nurses</code>) except doctors
+        (<code>/api/Doctor</code>). Renaming the controller to <code>DoctorsController</code>
+        would make the surface predictable.</div>
+      <div class="note warn"><strong>3 · No migrations, no auth.</strong> There are no EF Core
+        migrations (entities assume the tables already exist) and no authentication or
+        authorization on any endpoint — anyone who can reach the API can read and write patient
+        data. Both are expected for a course project, but both are blockers for real deployment
+        of anything holding medical records.</div>
+      <div class="note info"><strong>4 · OpenAPI is mapped outside Development.</strong> In
+        <code>Program.cs</code>, <code>app.MapOpenApi()</code> runs only when the environment is
+        <em>not</em> Development — the reverse of the usual setup — so the generated spec is
+        exposed in production rather than locally. Worth double-checking that's intended.</div>
+    </section>
+
+    <footer>
+      <p class="mono">HospitalAPI · ASP.NET Core 9.0 · EF Core · PostgreSQL/Supabase</p>
+      <p>Documentation generated from the source at
+        <a href="https://github.com/helloAsAlways/HospitalAPI" target="_blank" rel="noopener">github.com/helloAsAlways/HospitalAPI</a>.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+// scroll-spy for the sidebar
+const links = [...document.querySelectorAll('.nav a')];
+const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = map.get(e.target.id);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-45% 0px -50% 0px' });
+document.querySelectorAll('section[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
